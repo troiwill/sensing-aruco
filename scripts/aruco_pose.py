@@ -5,7 +5,7 @@ from scipy.spatial.transform import Rotation as R
 import math # Math library
  
 aruco_marker_side_length = .5 # in meters (also consider the scaling applied in the model.sdf of aruco_marker at ~/.gazebo/models/aruco_marker/model.sdf)
-camera_calibration_parameters_filename = './calibrationdata/ost.yaml'
+camera_calibration_parameters_filename = './calibration_data/ost.yaml'
  
 # Dictionary that was used to generate the ArUco marker
 aruco_dictionary_name = "DICT_4X4_1000"
@@ -135,14 +135,14 @@ def main(img_file):
         roll_x = math.degrees(roll_x)
         pitch_y = math.degrees(pitch_y)
         yaw_z = math.degrees(yaw_z)
-        print("transform_translation_x: {}".format(transform_translation_x))
-        print("transform_translation_y: {}".format(transform_translation_y))
-        print("transform_translation_z: {}".format(transform_translation_z))
-        print("roll_x: {}".format(roll_x))
-        print("pitch_y: {}".format(pitch_y))
-        print("yaw_z: {}".format(yaw_z))
-        print()
-        return transform_translation_x, transform_translation_y, transform_translation_z, roll_x, pitch_y, yaw_z
+        # print("transform_translation_x: {}".format(transform_translation_x))
+        # print("transform_translation_y: {}".format(transform_translation_y))
+        # print("transform_translation_z: {}".format(transform_translation_z))
+        # print("roll_x: {}".format(roll_x))
+        # print("pitch_y: {}".format(pitch_y))
+        # print("yaw_z: {}".format(yaw_z))
+        # print()
+        return transform_translation_x, transform_translation_y, transform_translation_z, transform_rotation_x, transform_rotation_y, transform_rotation_z, transform_rotation_w#, roll_x, pitch_y, yaw_z
          
         # Draw the axes on the marker
         #cv2.aruco.drawAxis(frame, mtx, dst, rvecs[i], tvecs[i], 1.5)
