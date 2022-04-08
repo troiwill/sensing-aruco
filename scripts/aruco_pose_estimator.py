@@ -1,16 +1,19 @@
+import math
 import message_filters
-from math import sqrt
 import rospy
 from sensor_msgs.msg import Image
 import numpy as np
 from cv_bridge import CvBridge
 import cv2
 import aruco_pose
+import tf
+import argparse
 from gazebo_msgs.srv import GetModelState
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
-from aruco_pose import euler_from_quaternion
-import os
-import pickle
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--arucomarker_side', type=float, default=0.5, help='side length of the aruco marker in meters')
+args = parser.parse_args()
 
 bridge = CvBridge()
 # hash_calc = cv2.img_hash.BlockMeanHash_create()
@@ -26,9 +29,13 @@ def calculate_pose(data):
     #     pose_estimate.pose.position.x = -1
     #     return pose_estimate
     # hash_value = curr_hash
-    x, y, z, q_x, q_y, q_z, q_w = aruco_pose.main(cv_image)
+    aruco_pose.aruco_marker_side_length = args.arucomarker_side
+    x, y, z, q_x, q_y, q_z, q_w  = aruco_pose.main(cv_image)#
+
+    # r, p, yaw = tf.transformations.euler_from_quaternion((q_x, q_y, q_z, q_w))# r, p, yaw in radians
     # print('*** Predicted pose ***')
     # print('x:', x, 'y:', y, 'z:', z, 'roll:', r, 'pitch:', p, 'yaw:', yaw)
+
     pose_stamp = PoseStamped()
     pose_stamp.pose = Pose(position = Point(x=x, y=y, z=z),
                            orientation = Quaternion(x=q_x, y=q_y, z=q_z, w=q_w))
@@ -67,7 +74,7 @@ def callback(color_data, depth_data, pose_pub, publish_pose=True):
     # if publish_pose:
     #     if pose_estimate.pose.position.x != -1:
     #         print(pose_estimate.pose.position.x)
-            pose_pub.publish(pose_estimate)
+    pose_pub.publish(pose_estimate)
 
 def node():
     rospy.init_node('aruco_pose_estimator', anonymous=True)

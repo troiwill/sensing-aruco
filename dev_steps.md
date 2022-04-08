@@ -5,5 +5,6 @@
 - Calibrate realsense camaera to get its `calibration.yaml` file
 - Edit the generated yaml file to the format of the yaml file present in this repo.
 
-
-## 
+## Note:
+- The aruco marker involved is applied as texture on top of a plane.
+- The model file of the aruco marker is provided as `aruco_marker`

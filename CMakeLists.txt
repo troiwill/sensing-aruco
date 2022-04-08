@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(realsense2_description)
+project(sensing-aruco)
 
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
@@ -17,7 +17,7 @@ include_directories(
 )
 
 catkin_install_python(PROGRAMS
-  scripts/img_getter.py scripts/aruco_pose.py scripts/listener.py
+  scripts/aruco_pose_estimator.py scripts/aruco_pose.py scripts/listener.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
