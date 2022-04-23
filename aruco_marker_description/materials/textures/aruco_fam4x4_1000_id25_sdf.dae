@@ -99,7 +99,7 @@
   </library_geometries>
   <library_images>
     <image id="object_1">
-      <init_from>4x4_1000-25.jpg</init_from>
+      <init_from>padded_marker.jpg</init_from>
     </image>
   </library_images>
   <library_visual_scenes>

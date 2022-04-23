@@ -1,19 +1,14 @@
 <?xml version="1.0"?>
 <sdf version="1.4">
-<model name="aruco_marker">
-    <pose>0 0 0 0 0 0</pose>
-    <static>false</static>
+  <model name="aruco_fam4x4_1000_id25_sdf">
+    <static>true</static>
     <link name="link">
-      <gravity>0</gravity> 
       <collision name="collision">
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>.5 .5</size>
+            <size>0.1 0.1</size>
           </plane>
-          <mesh>
-            <uri>model://aruco_marker/materials/textures/aruco.dae</uri>
-          </mesh>
         </geometry>
         <surface>
           <friction>
@@ -29,18 +24,15 @@
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>.5 .5</size>
-	  </plane>
-	  <mesh>
-	    <uri>model://aruco_marker/materials/textures/aruco.dae</uri>
+            <size>0.1 0.1</size>    </plane>    <mesh>
+        <uri>model://aruco_marker_description/materials/textures/aruco_fam4x4_1000_id25_sdf.dae</uri>
           </mesh>
         </geometry>
         <material>
           <script>
-            <uri>model://aruco_marker/materials/scripts/</uri>
-            <uri>model://aruco_marker/materials/textures/</uri>
-	    <name>ArucoMarker/Image</name>
-	    <emissive>1 1 1 1</emissive>
+            <uri>model://aruco_marker_description/materials/scripts/</uri>
+            <uri>model://aruco_marker_description/materials/textures/</uri>
+            <name>aruco_fam4x4_1000_id25_sdf/Image</name>
           </script>
         </material>
       </visual>
