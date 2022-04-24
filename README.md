@@ -1,15 +1,30 @@
-# Estimating aruco pose & depth using Realsense D435 camera
-- This repo was created using [this](https://github.com/issaiass/realsense2_description) repo.
-- The steps involved in the development are jotted in `dev_steps.md`.
+# Sensing Aruco
+
+A ROS package that contains aruco markers and a Python module for detecting aruco markers.
+
+## Installation
+
+Perform the following steps to install the sense-aruco repository.
+1) Clone the sensing-aruco repository.
+```
+cd ${HOME}/repos
+git clone https://github.com/troiwill/sensing-aruco
+```
+
+2) Create links to the packages.
+```
+cd ${HOME}/catkin_ws/src
+ln -s ${HOME}/repos/sensing-aruco/aruco_marker_description aruco_marker_description
+ln -s ${HOME}/repos/sensing-aruco/sense_aruco sense_aruco
+```
+
+3) Build the workspaces.
+```
+cd ..
+catkin build
+```
 
 ## Usage
-- Clone this repo into the `src` folder of your catkin workspace (eg: `~/catkin_ws/src`).
-- Move the `aruco_marker` folder to your defaut gazebo models directory (eg: `~/.gazebo/models/`)
-- Build the package from the root of your workspace using `catkin_make`
-- Source the devel space using `. ~/catkin_ws/devel/setup.bash`
 - Launch the realsense camera in Gazebo & interface it with ROS using `roslaunch sensing-aruco view_d435_model_rviz_gazebo.launch`
 - change directory with `cd ~/catkin_ws/src/sensing-aruco/scripts`
-- Subscribe to the color & depth topics of realsense & publish the estimated pose by running `python3 img_getter.py --arucomarker_side=0.5`
-
-## Problems Faced
-- TimeSynchronizer can't be used if the all the topics involved don't publish at the exact same time. So, used ApproximateTimeSynchronizer instead.
+- Subscribe to the color & depth topics of realsense & publish the estimated pose by running `rosrun sense_aruco aruco_pose_estimator.py parampath:=$(find sense_aruco)/calib/ost.yaml marker_len:=0.5`

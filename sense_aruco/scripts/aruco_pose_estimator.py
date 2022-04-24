@@ -101,10 +101,10 @@ if __name__ == '__main__':
     
     # Configure the node.
     paramfilepath = rospy.get_param("~parampath")
-    family_name = rospy.get_param("~familyname")
+    family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
     marker_side_len = float(rospy.get_param("~marker_len"))
-    compute_covar = bool(rospy.get_param("~compute_covar"))
-    publisher_topic = rospy.get_param("~pose_topic")
+    compute_covar = bool(rospy.get_param("~compute_covar", False))
+    publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
 
     aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
         family_name=family_name, marker_side_len=marker_side_len,
