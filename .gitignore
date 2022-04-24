@@ -1,0 +1,8 @@
+# Ignore hidden files
+.*
+
+# Ignore compiled python files
+*.pyc
+
+# Ignore cache directories
+__pycache__
