@@ -4,27 +4,19 @@ A ROS package that contains aruco markers and a Python module for detecting aruc
 
 ## Prerequisites
 
-Uninstall opencv-python if it is installed. Having opencv-python and opencv-contrib-python will conflict with each other.
+1) Uninstall opencv-python if it is installed. Having opencv-python and opencv-contrib-python will conflict with each other.
 ```
 python2 -m pip uninstall opencv-python
 ```
 
-Install ROS geometry and std msgs packages.
+2) Install ROS geometry msgs, std msgs, and cv-bridge packages.
 ```
-sudo apt-get install ros-melodic-geometry-msgs ros-melodic-std-msgs
-```
-
-Install ROS CV bridge package.
-```
-sudo apt-get install ros-melodic-cv-bridge
+sudo apt-get install ros-melodic-geometry-msgs ros-melodic-std-msgs ros-melodic-cv-bridge
 ```
 
-Install ROS RealSense packages.
-```
-sudo apt install ros-melodic-realsense2-camera ros-melodic-realsense2-description
-```
+3) Install ROS RealSense packages. Follow these [installation instructions](https://github.com/troiwill/realsense-ros-sdf/blob/main/README.md#installation) to install the packages for the RealSense (if you are using one).
 
-Install the following Python packages.
+4) Install the following Python packages.
 ```
 python2 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
 ```
@@ -56,7 +48,7 @@ cd ..
 catkin build
 ```
 
-## Usage
+## Usage with a D435 RealSense Camera
 
 1) Launch the RealSense camera in Gazebo & interface it with ROS using:
 ```
