@@ -2,6 +2,19 @@
 
 A ROS package that contains aruco markers and a Python module for detecting aruco markers.
 
+## Prerequisites
+
+Uninstall opencv-python if it is installed.
+```
+python2 -m pip uninstall opencv-python
+```
+
+Run the following commands to install the prerequisites.
+```
+sudo apt-get install ros-melodic-geometry-msgs ros-melodic-cv-bridge ros-melodic-std-msgs
+python2 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
+```
+
 ## Installation
 
 Perform the following steps to install the sense-aruco repository.
