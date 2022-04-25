@@ -1,18 +1,20 @@
-from aruco_estimator import ArucoMarkerEstimator
+#!/usr/bin/env python
+
+from sense_aruco.aruco_estimator import ArucoMarkerEstimator
 from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion, \
     PoseWithCovarianceStamped
 import message_filters
 import numpy as np
 import rospy
-from scipy.spatial.transform import Rotation as R
+import tf.transformations
 from sensor_msgs.msg import Image
 
 
 class ArucoPoseEstimatorNode:
 
     def __init__(self, paramfilepath, family_name, marker_side_len,
-        compute_covar=False):
+        frame_of_marker="/map", compute_covar=False):
         self.cvbridge = CvBridge()
 
         # Set up the marker estimator.
@@ -21,6 +23,7 @@ class ArucoPoseEstimatorNode:
             marker_side_len=marker_side_len)
 
         self.compute_covar = compute_covar
+        self.__frame_of_marker = frame_of_marker
     #end def
 
     def callback(self, color_image, depth_data):
@@ -38,8 +41,8 @@ class ArucoPoseEstimatorNode:
 
             # TODO: perform the transformation from camera to global coords.
 
-            qx, qy, qz, qw = R.from_matrix(pose[:3, :3]).as_quat()
-            tx, ty, tz = pose[:, 3].flatten()
+            qx, qy, qz, qw = tf.transformations.quaternion_from_matrix(pose)
+            tx, ty, tz = pose[:3, 3].flatten()
 
             ros_stamp = color_image.header.stamp
             ros_pose = Pose(position = Point(x=tx, y=ty, z=tz),
@@ -56,12 +59,14 @@ class ArucoPoseEstimatorNode:
 
                 msg = PoseWithCovarianceStamped()
                 msg.header.stamp = ros_stamp
+                msg.header.frame_id = self.__frame_of_marker
                 msg.pose.pose = ros_pose
                 msg.pose.covariance = covar.tolist()
 
             else:
                 msg = PoseStamped()
                 msg.header.stamp = ros_stamp
+                msg.header.frame_id = self.__frame_of_marker
                 msg.pose = ros_pose
             #end if
 
@@ -73,7 +78,7 @@ class ArucoPoseEstimatorNode:
         # Convert the color image to a CV image, and then get the data.
         cv_image = self.cvbridge.imgmsg_to_cv2(image_msg,
             desired_encoding='bgr8')
-        return self.marker_estimator.detect(cv_image)
+        return self.marker_estimator.detect(cv_image, get_pose=True)
     #end def
 
     def setup_node(self, publisher_topic, queue_len):
@@ -83,11 +88,11 @@ class ArucoPoseEstimatorNode:
             '/camera/depth/image_raw', Image)
 
         if self.compute_covar:
-            self.pose_pub = rospy.Publisher(publisher_topic, PoseStamped,
-                queue_size=queue_len)
-        else:
             self.pose_pub = rospy.Publisher(publisher_topic,
                 PoseWithCovarianceStamped, queue_size=queue_len)
+        else:
+            self.pose_pub = rospy.Publisher(publisher_topic,
+                PoseStamped, queue_size=queue_len)
 
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [self.color_sub, self.depth_sub], queue_len, 0.01)

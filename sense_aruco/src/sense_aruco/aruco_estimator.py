@@ -30,9 +30,8 @@ class ArucoMarkerEstimator:
         image. If no marker was not found, this function returns an empty list.
         """
         # Estimate the corners and IDs of the markers. Ignore rejected markers.
-        corners, marker_ids, _ = cv2.aruco.detectMarkers(
-            image, self.__aruco_dict, parameters=self.__aruco_params,
-            cameraMatrix=self.__calib_mat, distCoeff=self.__calib_dst)
+        corners, marker_ids, _ = cv2.aruco.detectMarkers(image=image,
+            dictionary=self.__aruco_dict, parameters=self.__aruco_params)
 
         # Get the number of corners.
         n_corners = len(corners)
@@ -41,9 +40,10 @@ class ArucoMarkerEstimator:
 
         # Get the marker poses if requested.
         if get_pose and self.has_calib_params():
-            rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
-                corners, self.__marker_side_len, self.__calib_mat,
-                self.__calib_dst)
+            rvecs, tvecs = cv2.aruco.estimatePoseSingleMarkers(
+                corners=corners, markerLength=self.__marker_side_len,
+                cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst)
+
         else:
             rvecs, tvecs = list([None] * n_corners), list([None] * n_corners)
         #end if
@@ -54,13 +54,14 @@ class ArucoMarkerEstimator:
         for m_corners, m_id, rvec, tvec \
             in zip(corners, marker_ids, rvecs, tvecs):
             data = dict()
-            data['corners'] = m_corners.reshape((4,2)).astype(np.int32)
+            data['corners'] = np.copy(
+                m_corners.reshape((4,2)).astype(np.int32))
             data['mid'] = int(m_id)
 
             # Compute the marker pose if requested.
             if get_pose:
                 pose = np.eye(4)
-                pose[:,3] = tvec.flatten()
+                pose[:3,3] = tvec.flatten()
                 pose[:3,:3], _ = cv2.Rodrigues(rvec.flatten())
                 data['pose'] = pose
             #end if
@@ -74,7 +75,7 @@ class ArucoMarkerEstimator:
     @staticmethod
     def get_family_dictionaries():
         """
-        Returns a 
+        Returns a dictionary containing the Aruco families.
         """
         return dict({
             "DICT_4X4_50": cv2.aruco.DICT_4X4_50,
