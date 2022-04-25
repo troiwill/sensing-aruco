@@ -65,5 +65,5 @@ roslaunch sensing-aruco view_d435_model_rviz_gazebo.launch
 
 2) Run the following node, which publishes a marker's pose.
 ```
-rosrun sense_aruco aruco_pose_estimator.py parampath:=${HOME}/repos/sensing-aruco/sense_aruco/calib/ost.yaml marker_len:=0.1
+rosrun sense_aruco aruco_pose_estimator.py _parampath:=${HOME}/repos/sensing-aruco/sense_aruco/calib/ost.yaml _marker_len:=0.1
 ```
