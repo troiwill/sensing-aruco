@@ -43,6 +43,13 @@ catkin build
 ```
 
 ## Usage
-- Launch the realsense camera in Gazebo & interface it with ROS using `roslaunch sensing-aruco view_d435_model_rviz_gazebo.launch`
-- change directory with `cd ~/catkin_ws/src/sensing-aruco/scripts`
-- Subscribe to the color & depth topics of realsense & publish the estimated pose by running `rosrun sense_aruco aruco_pose_estimator.py parampath:=$(find sense_aruco)/calib/ost.yaml marker_len:=0.5`
+
+1) Launch the RealSense camera in Gazebo & interface it with ROS using:
+```
+roslaunch sensing-aruco view_d435_model_rviz_gazebo.launch
+```
+
+2) Run the following node, which publishes a marker's pose.
+```
+rosrun sense_aruco aruco_pose_estimator.py parampath:=${HOME}/repos/sensing-aruco/sense_aruco/calib/ost.yaml marker_len:=0.1
+```
