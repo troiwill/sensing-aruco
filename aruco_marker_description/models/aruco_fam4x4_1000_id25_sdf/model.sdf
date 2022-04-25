@@ -24,14 +24,16 @@
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>0.1 0.1</size>    </plane>    <mesh>
-        <uri>model://aruco_marker_description/materials/textures/aruco_fam4x4_1000_id25_sdf.dae</uri>
-          </mesh>
+            <size>0.1 0.1</size>
+          </plane>
+        <mesh>
+          <uri>model://aruco_fam4x4_1000_id25_sdf/materials/textures/aruco_fam4x4_1000_id25_sdf.dae</uri>
+        </mesh>
         </geometry>
         <material>
           <script>
-            <uri>model://aruco_marker_description/materials/scripts/</uri>
-            <uri>model://aruco_marker_description/materials/textures/</uri>
+            <uri>model://aruco_fam4x4_1000_id25_sdf/materials/scripts/</uri>
+            <uri>model://aruco_fam4x4_1000_id25_sdf/materials/textures/</uri>
             <name>aruco_fam4x4_1000_id25_sdf/Image</name>
           </script>
         </material>
