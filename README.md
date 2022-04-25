@@ -4,7 +4,7 @@ A ROS package that contains aruco markers and a Python module for detecting aruc
 
 ## Prerequisites
 
-Uninstall opencv-python if it is installed.
+Uninstall opencv-python if it is installed. Having opencv-python and opencv-contrib-python will conflict with each other.
 ```
 python2 -m pip uninstall opencv-python
 ```
