@@ -9,9 +9,23 @@ Uninstall opencv-python if it is installed. Having opencv-python and opencv-cont
 python2 -m pip uninstall opencv-python
 ```
 
-Run the following commands to install the prerequisites.
+Install ROS geometry and std msgs packages.
 ```
-sudo apt-get install ros-melodic-geometry-msgs ros-melodic-cv-bridge ros-melodic-std-msgs
+sudo apt-get install ros-melodic-geometry-msgs ros-melodic-std-msgs
+```
+
+Install ROS CV bridge package.
+```
+sudo apt-get install ros-melodic-cv-bridge
+```
+
+Install ROS RealSense packages.
+```
+sudo apt install ros-melodic-realsense2-camera ros-melodic-realsense2-description
+```
+
+Install the following Python packages.
+```
 python2 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
 ```
 
