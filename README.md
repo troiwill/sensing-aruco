@@ -18,7 +18,12 @@ ln -s ${HOME}/repos/sensing-aruco/aruco_marker_description aruco_marker_descript
 ln -s ${HOME}/repos/sensing-aruco/sense_aruco sense_aruco
 ```
 
-3) Build the workspaces.
+3) Make the scripts executable.
+```
+chmod +x ${HOME}/repos/sensing-aruco/sense_aruco/scripts/*.py
+```
+
+4) Build the workspaces.
 ```
 cd ..
 catkin build
