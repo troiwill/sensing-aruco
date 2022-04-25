@@ -40,23 +40,25 @@ class ArucoMarkerEstimator:
 
         # Get the marker poses if requested.
         if get_pose and self.has_calib_params():
-            rvecs, tvecs = cv2.aruco.estimatePoseSingleMarkers(
+            rvecs, tvecs, objpts = cv2.aruco.estimatePoseSingleMarkers(
                 corners=corners, markerLength=self.__marker_side_len,
                 cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst)
 
         else:
-            rvecs, tvecs = list([None] * n_corners), list([None] * n_corners)
+            rvecs, tvecs, objpts = list([None] * n_corners), \
+                list([None] * n_corners), list([None] * n_corners)
         #end if
 
         # Aggregate all the markers into a list of dictionaries.
         marker_list = list()
         marker_ids = marker_ids.flatten()
-        for m_corners, m_id, rvec, tvec \
-            in zip(corners, marker_ids, rvecs, tvecs):
+        for m_corners, m_id, rvec, tvec, pts \
+            in zip(corners, marker_ids, rvecs, tvecs, objpts):
             data = dict()
             data['corners'] = np.copy(
                 m_corners.reshape((4,2)).astype(np.int32))
             data['mid'] = int(m_id)
+            data['pts'] = np.copy(pts)
 
             # Compute the marker pose if requested.
             if get_pose:
