@@ -24,7 +24,7 @@ class ArucoMarkerEstimator:
             self.set_marker_side_len(marker_side_len)
     #end def
 
-    def detect(self, image, get_pose=False):
+    def detect(self, image):
         """
         Estimates the IDs and four corners of each detected aruco marker in an 
         image. If no marker was not found, this function returns an empty list.
@@ -33,45 +33,41 @@ class ArucoMarkerEstimator:
         corners, marker_ids, _ = cv2.aruco.detectMarkers(image=image,
             dictionary=self.__aruco_dict, parameters=self.__aruco_params)
 
-        # Get the number of corners.
-        n_corners = len(corners)
-        if n_corners == 0:
-            return list()
+        if len(corners) == 0:
+            return None
 
-        # Get the marker poses if requested.
-        if get_pose and self.has_calib_params():
-            rvecs, tvecs, objpts = cv2.aruco.estimatePoseSingleMarkers(
-                corners=corners, markerLength=self.__marker_side_len,
-                cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst)
+        dtypes = [('mid',int), ('corners',float,(4,2))]
+        detections = np.empty((len(corners,)), dtype=dtypes)
+        detections['mid'] = marker_ids
+        detections['corners'] = np.array(corners).reshape(-1,4,2)
+        return detections        
+    #end def
 
-        else:
-            rvecs, tvecs, objpts = list([None] * n_corners), \
-                list([None] * n_corners), list([None] * n_corners)
-        #end if
+    def estimate_pose(self, detections):
+        # Sanity checks.
+        if len(detections) == 0:
+            return None
+        if self.has_calib_params() == False:
+            return None
 
-        # Aggregate all the markers into a list of dictionaries.
-        marker_list = list()
-        marker_ids = marker_ids.flatten()
-        for m_corners, m_id, rvec, tvec, pts \
-            in zip(corners, marker_ids, rvecs, tvecs, objpts):
-            data = dict()
-            data['corners'] = np.copy(
-                m_corners.reshape((4,2)).astype(np.int32))
-            data['mid'] = int(m_id)
-            data['pts'] = np.copy(pts)
+        # Estimate the pose of all the seen markers.
+        rvecs, tvecs, objpts = cv2.aruco.estimatePoseSingleMarkers(
+            corners=detections['corners'],
+            markerLength=self.__marker_side_len,
+            cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst)
 
-            # Compute the marker pose if requested.
-            if get_pose:
-                pose = np.eye(4)
-                pose[:3,3] = tvec.flatten()
-                pose[:3,:3], _ = cv2.Rodrigues(rvec.flatten())
-                data['pose'] = pose
-            #end if
+        # Sanity check.
+        if len(detections) != len(rvecs):
+            raise Exception('Failed to estimate pose of all detected markers.')
 
-            marker_list.append(data)
-        #end for
+        # Create an array of estimates.
+        dtypes =  [('mid',int), ('tvec',float,(1,3)), ('rvec',float,(1,3))]
+        estimates = np.empty((len(detections)), dtype=dtypes)
+        estimates['mid'] = detections['mid'].copy()
+        estimates['tvec'] = np.array(tvecs).reshape(-1,1,3)
+        estimates['rvec'] = np.array(rvecs).reshape(-1,1,3)
         
-        return marker_list
+        return estimates
     #end def
 
     @staticmethod
@@ -135,7 +131,7 @@ class ArucoMarkerEstimator:
         """
         family_dict = ArucoMarkerEstimator.get_family_dictionaries()
         if family_dict.get(family_name, None) is None:
-            raise Exception("ArUCo tag of '{}' is not supported!".format(
+            raise Exception("ArUco family '{}' is not supported!".format(
                 family_name))
         #end if
 
