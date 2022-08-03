@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from sense_aruco.aruco_estimator import ArucoMarkerEstimator
 from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped
-import numpy as np
 import rospy
 from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Image
@@ -90,12 +89,14 @@ if __name__ == '__main__':
     paramfilepath = rospy.get_param("~parampath")
     family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
     marker_side_len = float(rospy.get_param("~marker_len"))
+    image_sub_topic = rospy.get_param("~image_topic", '/camera/color/image_raw')
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
 
     aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
         family_name=family_name, marker_side_len=marker_side_len)
     
-    aruco_estimator_node.setup_node(publisher_topic, queue_len)
+    aruco_estimator_node.setup_node(image_sub_topic, publisher_topic,
+        queue_len)
     
     rospy.spin()
 #end if
