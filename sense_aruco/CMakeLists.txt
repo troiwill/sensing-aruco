@@ -15,7 +15,7 @@ catkin_python_setup()
 catkin_package()
 
 catkin_install_python(PROGRAMS
-  scripts/aruco_pose_estimator.py
+  scripts/aruco_pose_estimator_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY launch
