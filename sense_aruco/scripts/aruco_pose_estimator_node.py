@@ -3,6 +3,9 @@
 from sense_aruco.aruco_estimator import ArucoMarkerEstimator
 from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped
+import numpy as np
+import os
+import rospkg
 import rospy
 from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Image
@@ -31,42 +34,42 @@ class ArucoPoseEstimatorNode:
             desired_encoding='bgr8')
 
         # Perform pose estimation on the detected markers.
-        grouped_detections = self.marker_estimator.detect(cv_image)
-        grouped_pose_estimates = self.marker_estimator.estimate_pose(
-            grouped_detections)
-        if grouped_pose_estimates is None or len(grouped_pose_estimates) == 0:
+        detections = self.marker_estimator.detect(cv_image)
+        pose_estimates = self.marker_estimator.estimate_pose(
+            detections)
+        if pose_estimates is None or len(pose_estimates) == 0:
             return
 
         # Extract the poses, transform them from camera to global coords,
         # and publish the messages.
         rospy.loginfo('Time @ ' + str(image_msg.header.stamp))
-        for detections, estimates in zip(grouped_detections,
-            grouped_pose_estimates):
-            for _, estimate in zip(detections, estimates):
-                msg = PoseStamped()
-                msg.header.stamp = image_msg.header.stamp
-                msg.header.frame_id = self.__frame_of_marker
+        for i in range(len(pose_estimates)):
+            msg = PoseStamped()
+            msg.header.stamp = image_msg.header.stamp
+            msg.header.frame_id = self.__frame_of_marker
 
-                tx, ty, tz = estimate['tvec'].flatten()
-                msg.pose.position.x = tx
-                msg.pose.position.y = ty
-                msg.pose.position.z = tz
+            tx, ty, tz = pose_estimates[i]['tvec'].flatten()
+            msg.pose.position.x = tx
+            msg.pose.position.y = ty
+            msg.pose.position.z = tz
 
-                rotations = R.from_rotvec(estimate['rotvec'])
-                qx, qy, qz, qw = rotations.as_quat()
-                msg.pose.orientation.x = qx
-                msg.pose.orientation.y = qy
-                msg.pose.orientation.z = qz
-                msg.pose.orientation.w = qw
+            rotations = R.from_rotvec(
+                pose_estimates[i]['rvec'].flatten())
+            qx, qy, qz, qw = rotations.as_quat()
+            msg.pose.orientation.x = qx
+            msg.pose.orientation.y = qy
+            msg.pose.orientation.z = qz
+            msg.pose.orientation.w = qw
 
-                self.__pose_pub.publish(msg)
+            self.__pose_pub.publish(msg)
 
-                logstr = '- M {} at '
-                logstr += 'pos [xyz in m]: ({:.2f}, {:.2f}, {:.2f}), '
-                logstr += 'rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})'
-                roll, pitch, yaw = rotations.as_rotvec(degrees=True)
-                rospy.loginfo(logstr.format(estimate['mid'], tx, ty, tz, roll,
-                    pitch, yaw))
+            logstr = '\n- Marker #{}:'
+            logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
+            logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
+            roll, pitch, yaw = rotations.as_rotvec()
+            rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
+                tx, ty, tz, np.degrees(roll), np.degrees(pitch),
+                np.degrees(yaw)))
         #end for
     #end def
 
@@ -86,10 +89,13 @@ if __name__ == '__main__':
     rospy.init_node('aruco_pose_estimator', anonymous=True)
     
     # Configure the node.
-    paramfilepath = rospy.get_param("~parampath")
+    rospack = rospkg.RosPack()
+    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path('sense_aruco'),
+        "calib/gazebo_cams/px4_fpv_cam.yaml")
+    paramfilepath = rospy.get_param("~parampath", PX4_FPV_CAM_PATH)
     family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
-    marker_side_len = float(rospy.get_param("~marker_len"))
-    image_sub_topic = rospy.get_param("~image_topic", '/camera/color/image_raw')
+    marker_side_len = float(rospy.get_param("~marker_len", 0.18))
+    image_sub_topic = rospy.get_param("~image_topic", '/iris/usb_cam/image_raw')
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
 
     aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
