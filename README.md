@@ -2,7 +2,7 @@
 
 A ROS package that contains aruco markers and a Python module for detecting aruco markers.
 
-## Prerequisites
+## Python 2 Prerequisites
 
 1) Uninstall opencv-python if it is installed. Having opencv-python and opencv-contrib-python will conflict with each other.
 ```
@@ -14,9 +14,7 @@ python2 -m pip uninstall opencv-python
 sudo apt-get install ros-melodic-geometry-msgs ros-melodic-std-msgs ros-melodic-cv-bridge
 ```
 
-3) Install ROS RealSense packages. Follow these [installation instructions](https://github.com/troiwill/realsense-ros-sdf/blob/main/README.md#installation) to install the packages for the RealSense (if you are using one).
-
-4) Install the following Python packages.
+3) Install the following Python packages.
 ```
 python2 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
 ```
@@ -46,16 +44,4 @@ chmod +x ${HOME}/repos/sensing-aruco/sense_aruco/scripts/*.py
 ```
 cd ..
 catkin build
-```
-
-## Usage with a D435 RealSense Camera
-
-1) Launch the RealSense camera in Gazebo & interface it with ROS using:
-```
-roslaunch sense_aruco view_d435_model_rviz_gazebo.launch
-```
-
-2) Run the following node, which publishes a marker's pose.
-```
-rosrun sense_aruco aruco_pose_estimator.py _parampath:=${HOME}/repos/sensing-aruco/sense_aruco/calib/ost.yaml _marker_len:=0.1
 ```
