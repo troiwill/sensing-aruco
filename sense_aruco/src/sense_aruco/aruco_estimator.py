@@ -29,6 +29,10 @@ class ArucoMarkerEstimator:
         Estimates the IDs and four corners of each detected aruco marker in an 
         image. If no marker was not found, this function returns an empty list.
         """
+        # Sanity check.
+        if image is None:
+            return None
+        
         # Estimate the corners and IDs of the markers. Ignore rejected markers.
         corners, marker_ids, _ = cv2.aruco.detectMarkers(image=image,
             dictionary=self.__aruco_dict, parameters=self.__aruco_params)
@@ -45,6 +49,8 @@ class ArucoMarkerEstimator:
 
     def estimate_pose(self, detections):
         # Sanity checks.
+        if detections is None:
+            return None
         if len(detections) == 0:
             return None
         if self.has_calib_params() == False:
