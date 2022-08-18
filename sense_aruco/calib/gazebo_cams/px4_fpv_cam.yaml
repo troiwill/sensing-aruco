@@ -1,4 +1,3 @@
-%YAML:1.0
 # The parameters were derived from the camera's "camera_info" ROS topic.
 ---
 horizontal_fov: 1.047
