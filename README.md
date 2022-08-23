@@ -27,10 +27,10 @@ sudo apt-get install ros-noetic-geometry-msgs ros-noetic-std-msgs ros-noetic-cv-
 3) Install the following Python packages.
 ```
 # Use the following for Python 2.
-python2 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
+python2 -m pip install opencv-contrib-python==4.6.0.66 scipy==1.9.0 --user
 
 # Use the following for Python 3.
-python3 -m pip install opencv-contrib-python==3.4.8.29 scipy==1.2.0 --user
+python3 -m pip install opencv-contrib-python==4.6.0.66 scipy==1.9.0 --user
 ```
 
 ## Installation
