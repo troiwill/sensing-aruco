@@ -1,0 +1,42 @@
+[project]
+name = "sense_aruco"
+version = "0.0.1"
+authors = [
+  { name="Troi Williams", email="willkode@outlook.com" },
+]
+description = "A Python API for sensing ArUco markers in simulated and physical environments using OpenCV."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+keywords = [
+    "python",
+    "aruco",
+    "aruco-marker",
+    "python3",
+    "ros",
+    "opencv",
+    "computer-vision",
+    "gazebo",
+    "python2",
+    "melodic",
+    "ros-melodic",
+    "ros-noetic",
+    "noetic"
+]
+dependencies = [
+    "opencv-contrib-python==4.6.0.66",
+    "scipy==1.9.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/troiwill/sensing-aruco"
+"Bug Tracker" = "https://github.com/troiwill/sensing-aruco/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
