@@ -4,7 +4,7 @@ horizontal_fov: 1.047
 image_width: 320
 image_height: 240
 camera_name: px4_fpv_cam
-K: !!opencv-matrix
+K:
   rows: 3
   cols: 3
   dt: d
@@ -12,18 +12,18 @@ K: !!opencv-matrix
            0.      , 277.191356, 240.50000,
            0.      ,   0.      ,   1.     ]
 distortion_model: plumb_bob
-D: !!opencv-matrix
+D:
   rows: 1
   cols: 5
   dt: d
   data: [0., 0., 0., 0., 0.]
-rectification_matrix: !!opencv-matrix
+rectification_matrix:
   rows: 3
   cols: 3
   data: [1., 0., 0.,
          0., 1., 0.,
          0., 0., 1.]
-projection_matrix: !!opencv-matrix
+projection_matrix:
   rows: 3
   cols: 4
   data: [277.191356,   0.      , 320.50000,  -0.     ,
