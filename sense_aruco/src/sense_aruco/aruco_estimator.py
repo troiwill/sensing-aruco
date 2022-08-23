@@ -2,6 +2,7 @@ from __future__ import print_function
 import cv2
 import numpy as np
 import os
+import yaml
 
 
 class ArucoMarkerEstimator:
@@ -115,10 +116,10 @@ class ArucoMarkerEstimator:
         #end if
 
         # Load the camera parameters from the saved file
-        cv_file = cv2.FileStorage(paramfilepath, cv2.FILE_STORAGE_READ)
-        self.__calib_mat = cv_file.getNode('K').mat()
-        self.__calib_dst = cv_file.getNode('D').mat()
-        cv_file.release()
+        with open(paramfilepath, "r") as f:
+            yamlfile = yaml.safe_load(f)
+            self.__calib_mat = np.array(yamlfile['K']['data']).reshape((3,3))
+            self.__calib_dst = np.array(yamlfile['D']['data']).reshape((1,5))
     #end def
 
     def set_marker_side_len(self, marker_side_len):
