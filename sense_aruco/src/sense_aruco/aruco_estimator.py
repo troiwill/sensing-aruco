@@ -14,6 +14,7 @@ class ArucoMarkerEstimator:
         self.__aruco_dict = None
         self.__aruco_params = None
         self.__marker_side_len = None
+        self.__family_name = None
 
         if paramfilepath is not None:
             self.load_camera_params(paramfilepath)
@@ -24,6 +25,57 @@ class ArucoMarkerEstimator:
         if marker_side_len is not None:
             self.set_marker_side_len(marker_side_len)
     #end def
+
+    @property
+    def D(self):
+        """
+        Returns the camera distortion coefficients.
+        """
+        if self.__calib_dst is not None:
+            return self.__calib_dst.flatten().copy()
+        
+        else:
+            return None
+
+    @property
+    def family_name(self):
+        """
+        Returns the ArUco family name that the estimator will detect.
+        """
+        return self.__family_name
+
+    @property
+    def K(self):
+        """
+        Returns the camera intrinsics matrix K (with shape (3,3)).
+        """
+        if self.__calib_mat is not None:
+            return self.__calib_mat.copy()
+        
+        else:
+            return None
+
+    @property
+    def K_3x4(self):
+        """
+        Returns the camera intrinsics matrix K (with shape (3,4)). The last column is
+        a vector of zeros. This matrix is helpful for computing the location of an
+        object in image coordinates (u,v) given the object's 3D position (x,y,z) in the
+        world.
+        """
+        if self.__calib_mat is not None:
+            K = self.K
+            return np.concatenate((K, np.zeros((3,1), dtype=K.dtype)), axis=1)
+
+        else:
+            return None
+
+    @property
+    def marker_side_length(self):
+        """
+        Returns the expected marker side length.
+        """
+        return self.__marker_side_len
 
     def detect(self, image):
         """
@@ -145,6 +197,7 @@ class ArucoMarkerEstimator:
                 family_name))
         #end if
 
+        self.__family_name = family_name
         self.__aruco_dict = cv2.aruco.Dictionary_get(family_dict[family_name])
         self.__aruco_params = cv2.aruco.DetectorParameters_create()
     #end def
