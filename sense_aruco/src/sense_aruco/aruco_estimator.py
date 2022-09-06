@@ -41,14 +41,17 @@ class ArucoMarkerEstimator:
         if len(corners) == 0:
             return None
 
-        dtypes = [('mid',int), ('corners',float,(4,2))]
+        dtypes = [('mid', np.uint32), ('corners', np.float64, (4,2))]
         detections = np.empty((len(corners,)), dtype=dtypes)
-        detections['mid'] = marker_ids
+        detections['mid'] = np.array(marker_ids).flatten()
         detections['corners'] = np.array(corners).reshape(-1,4,2)
         return detections        
     #end def
 
     def estimate_pose(self, detections):
+        """
+        Estimates the pose of the marker given an array of detections.
+        """
         # Sanity checks.
         if detections is None:
             return None
@@ -68,11 +71,11 @@ class ArucoMarkerEstimator:
             raise Exception('Failed to estimate pose of all detected markers.')
 
         # Create an array of estimates.
-        dtypes =  [('mid',int), ('tvec',float,(1,3)), ('rvec',float,(1,3))]
+        dtypes =  [('mid', np.uint32), ('tvec', np.float64, (3,)), ('rvec', np.float64,(3,))]
         estimates = np.empty((len(detections)), dtype=dtypes)
         estimates['mid'] = detections['mid'].copy()
-        estimates['tvec'] = np.array(tvecs).reshape(-1,1,3)
-        estimates['rvec'] = np.array(rvecs).reshape(-1,1,3)
+        estimates['tvec'] = np.array(tvecs).reshape(-1,3)
+        estimates['rvec'] = np.array(rvecs).reshape(-1,3)
         
         return estimates
     #end def
