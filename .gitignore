@@ -6,3 +6,6 @@
 
 # Ignore cache directories
 __pycache__
+
+# Python builds
+dist
