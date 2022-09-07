@@ -16,6 +16,12 @@ class ArucoMarkerEstimator:
         self.__marker_side_len = None
         self.__family_name = None
 
+        # Ensure we set the default estimation for now.
+        self.__estimate_parameters = cv2.aruco.EstimateParameters().create()
+        self.__estimate_parameters.pattern = cv2.aruco.CCW_center
+        self.__estimate_parameters.useExtrinsicGuess = False
+        self.__estimate_parameters.solvePnPMethod = cv2.SOLVEPNP_ITERATIVE
+
         if paramfilepath is not None:
             self.load_camera_params(paramfilepath)
 
@@ -116,7 +122,8 @@ class ArucoMarkerEstimator:
         rvecs, tvecs, objpts = cv2.aruco.estimatePoseSingleMarkers(
             corners=detections['corners'],
             markerLength=self.__marker_side_len,
-            cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst)
+            cameraMatrix=self.__calib_mat, distCoeffs=self.__calib_dst,
+            estimateParameters=self.__estimate_parameters)
 
         # Sanity check.
         if len(detections) != len(rvecs):
