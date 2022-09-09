@@ -46,7 +46,7 @@ class ArucoPoseEstimatorNode:
         for i in range(len(pose_estimates)):
             msg = PoseStamped()
             msg.header.stamp = image_msg.header.stamp
-            msg.header.frame_id = self.__frame_of_marker
+            msg.header.frame_id = image_msg.header.frame_id
 
             tx, ty, tz = pose_estimates[i]['tvec'].flatten()
             msg.pose.position.x = tx
