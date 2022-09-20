@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>fpv_cam_description</name>
+  <version>0.0.1</version>
+  <description>A modified FPV camera from the PX4/PX4-SITL_gazebo repository.</description>
+  <maintainer email="no@one.here"></maintainer>
+  <license>MIT License</license>
+
+  <url type="website">https://github.com/troiwill/sensing-aruco</url>
+  <url type="bugtracker">https://github.com/troiwill/sensing-aruco/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+    <exec_depend>gazebo_ros</exec_depend>
+
+    <export>
+        <gazebo_ros
+            gazebo_media_path="${prefix}"
+            gazebo_model_path="${prefix}/models"
+            /> 
+    </export>
+
+</package>
