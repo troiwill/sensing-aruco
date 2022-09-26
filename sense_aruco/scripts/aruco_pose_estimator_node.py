@@ -13,15 +13,17 @@ from sensor_msgs.msg import Image
 
 class ArucoPoseEstimatorNode:
 
-    def __init__(self, paramfilepath, family_name, marker_side_len,
-        frame_of_marker="/camera"):
+    def __init__(self, paramfilepath, family_name, marker_side_len, verbose):
         self.cvbridge = CvBridge()
 
         # Set up the marker estimator.
         self.marker_estimator = ArucoMarkerEstimator(
             paramfilepath=paramfilepath, family_name=family_name,
             marker_side_len=marker_side_len)
-        self.__frame_of_marker = frame_of_marker
+        
+        # Set verbosity.
+        assert verbose == True or verbose == False
+        self.__verbose = verbose
     #end def
 
     def rcvd_image_callback(self, image_msg):
@@ -42,7 +44,8 @@ class ArucoPoseEstimatorNode:
 
         # Extract the poses, transform them from camera to global coords,
         # and publish the messages.
-        rospy.loginfo('Time @ ' + str(image_msg.header.stamp))
+        if self.__verbose:
+            rospy.loginfo('Time @ ' + str(image_msg.header.stamp))
         for i in range(len(pose_estimates)):
             msg = PoseStamped()
             msg.header.stamp = image_msg.header.stamp
@@ -63,13 +66,14 @@ class ArucoPoseEstimatorNode:
 
             self.__pose_pub.publish(msg)
 
-            logstr = '\n- Marker #{}:'
-            logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
-            logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
-            roll, pitch, yaw = rotations.as_rotvec()
-            rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
-                tx, ty, tz, np.degrees(roll), np.degrees(pitch),
-                np.degrees(yaw)))
+            if self.__verbose:
+                logstr = '\n- Marker #{}:'
+                logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
+                logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
+                roll, pitch, yaw = rotations.as_euler("ZYX")
+                rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
+                    tx, ty, tz, np.degrees(roll), np.degrees(pitch),
+                    np.degrees(yaw)))
         #end for
     #end def
 
@@ -90,16 +94,16 @@ if __name__ == '__main__':
     
     # Configure the node.
     rospack = rospkg.RosPack()
-    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path('sense_aruco'),
-        "calib/gazebo_cams/px4_fpv_cam.yaml")
+    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path('fpv_cam_description'),
+        "calib/fpv_cam.yaml")
     paramfilepath = rospy.get_param("~parampath", PX4_FPV_CAM_PATH)
     family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
     marker_side_len = float(rospy.get_param("~marker_len", 0.18))
-    image_sub_topic = rospy.get_param("~image_topic", '/iris/usb_cam/image_raw')
+    image_sub_topic = rospy.get_param("~image_topic", '/fpv_cam/usb_cam/image_raw')
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
 
     aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
-        family_name=family_name, marker_side_len=marker_side_len)
+        family_name=family_name, marker_side_len=marker_side_len, verbose=True)
     
     aruco_estimator_node.setup_node(image_sub_topic, publisher_topic,
         queue_len)
