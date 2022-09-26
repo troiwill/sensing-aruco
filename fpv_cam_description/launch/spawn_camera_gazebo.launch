@@ -1,0 +1,17 @@
+<launch>
+    <!-- Camera configs -->
+    <arg name="camera_name" default="fpv_cam"/>
+    <arg name="camera_path" default="$(find fpv_cam_description)/models/fpv_cam.sdf"/>
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.12"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="0"/>
+
+  <!-- Spawn marker -->
+    <node name="$(arg camera_name)" output="screen" pkg="gazebo_ros"
+        type="spawn_model"
+        args="-sdf -file $(arg camera_path) -model $(arg camera_name) -x $(arg x) -y $(arg y) -z $(arg z) 
+        -R $(arg R) -P $(arg P) -Y $(arg Y)"/>
+</launch>

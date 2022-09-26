@@ -1,0 +1,10 @@
+<launch>
+    <!-- Launch Gazebo world -->
+    <include file="$(find sense_aruco)/launch/gazebo.launch"/>
+
+    <!-- Launch the marker -->
+    <include file="$(find aruco_marker_description)/launch/spawn_marker_gazebo.launch"/>
+
+    <!-- Launch the camera -->
+    <include file="$(find fpv_cam_description)/launch/spawn_camera_gazebo.launch"/>
+</launch>
