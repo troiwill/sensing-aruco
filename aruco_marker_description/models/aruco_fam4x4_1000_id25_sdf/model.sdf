@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <sdf version="1.4">
   <model name="aruco_fam4x4_1000_id25_sdf">
+    <pose>0 0 0 0 0 0</pose>
     <static>true</static>
     <link name="link">
       <collision name="collision">
