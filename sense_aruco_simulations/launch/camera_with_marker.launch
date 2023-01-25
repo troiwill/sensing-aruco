@@ -1,0 +1,7 @@
+<launch>
+    <!-- Launch Gazebo world -->
+    <include file="$(find sense_aruco_simulations)/launch/gazebo.launch"/>
+
+    <!-- Launch the marker -->
+    <include file="$(find aruco_marker_description)/launch/spawn_marker_gazebo.launch"/>
+</launch>
