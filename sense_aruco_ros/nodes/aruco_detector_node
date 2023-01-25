@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from sense_aruco.aruco_estimator import ArucoMarkerEstimator
+from sense_aruco.detector import ArucoDetector
 from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped
 import numpy as np
@@ -17,7 +17,7 @@ class ArucoPoseEstimatorNode:
         self.cvbridge = CvBridge()
 
         # Set up the marker estimator.
-        self.marker_estimator = ArucoMarkerEstimator(
+        self.marker_estimator = ArucoDetector(
             paramfilepath=paramfilepath, family_name=family_name,
             marker_side_len=marker_side_len)
         

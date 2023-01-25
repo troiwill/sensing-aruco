@@ -4,7 +4,7 @@ import os
 import yaml
 
 
-class ArucoMarkerEstimator:
+class ArucoDetector:
 
     def __init__(self, paramfilepath=None, family_name=None,
         marker_side_len=None):
