@@ -4,7 +4,7 @@ import os
 import yaml
 
 
-class ArucoMarkerEstimator:
+class ArucoDetector:
 
     def __init__(self, paramfilepath=None, family_name=None,
         marker_side_len=None):
@@ -69,7 +69,7 @@ class ArucoMarkerEstimator:
         world.
         """
         if self.__calib_mat is not None:
-            K = self.K
+            K = self.K.copy()
             return np.concatenate((K, np.zeros((3,1), dtype=K.dtype)), axis=1)
 
         else:
@@ -197,7 +197,7 @@ class ArucoMarkerEstimator:
         """
         Sets the marker family to search for in images.
         """
-        family_dict = ArucoMarkerEstimator.get_family_dictionaries()
+        family_dict = ArucoDetector.get_family_dictionaries()
         if family_dict.get(family_name, None) is None:
             raise Exception("ArUco family '{}' is not supported!".format(
                 family_name))
