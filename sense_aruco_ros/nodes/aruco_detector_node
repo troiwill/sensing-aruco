@@ -101,9 +101,10 @@ if __name__ == '__main__':
     marker_side_len = float(rospy.get_param("~marker_len", 0.18))
     image_sub_topic = rospy.get_param("~image_topic", '/fpv_cam/usb_cam/image_raw')
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
+    verbose = rospy.get_param("~verbose", True)
 
     aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
-        family_name=family_name, marker_side_len=marker_side_len, verbose=True)
+        family_name=family_name, marker_side_len=marker_side_len, verbose=verbose)
     
     aruco_estimator_node.setup_node(image_sub_topic, publisher_topic,
         queue_len)
