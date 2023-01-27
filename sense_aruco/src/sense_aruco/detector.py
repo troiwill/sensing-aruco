@@ -69,7 +69,7 @@ class ArucoDetector:
         world.
         """
         if self.__calib_mat is not None:
-            K = self.K
+            K = self.K.copy()
             return np.concatenate((K, np.zeros((3,1), dtype=K.dtype)), axis=1)
 
         else:
