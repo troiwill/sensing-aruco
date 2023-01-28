@@ -3,12 +3,30 @@ project(sense_aruco_ros)
 
 find_package(catkin REQUIRED COMPONENTS
     cv_bridge
+    message_generation
     geometry_msgs
     sensor_msgs
+    std_msgs
     rospy
 )
 
-catkin_package()
+add_message_files(
+    FILES
+    Marker.msg
+    MarkerArray.msg
+    MarkerPose.msg
+    MarkerPoseArray.msg
+)
+
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+    geometry_msgs
+)
+
+catkin_package(
+    CATKIN_DEPENDS message_runtime
+)
 
 catkin_install_python(PROGRAMS
     nodes/aruco_detector_node

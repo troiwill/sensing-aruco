@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sense_aruco.detector import ArucoDetector
-from sense_aruco_msgs.msg import Marker, MarkerArray, MarkerPose, MarkerPoseArray
+from sense_aruco_ros.msg import Marker, MarkerArray, MarkerPose, MarkerPoseArray
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Pose
 import numpy as np
