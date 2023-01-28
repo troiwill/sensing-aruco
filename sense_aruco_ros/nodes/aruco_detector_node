@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from sense_aruco.detector import ArucoDetector
+from sense_aruco_msgs.msg import Marker, MarkerArray, MarkerPose, MarkerPoseArray
 from cv_bridge import CvBridge
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Pose
 import numpy as np
 import os
 import rospkg
@@ -11,7 +12,7 @@ from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Image
 
 
-class ArucoPoseEstimatorNode:
+class ArucoDetectorNode:
 
     def __init__(self, paramfilepath, family_name, marker_side_len, verbose):
         self.cvbridge = CvBridge()
@@ -20,6 +21,11 @@ class ArucoPoseEstimatorNode:
         self.marker_estimator = ArucoDetector(
             paramfilepath=paramfilepath, family_name=family_name,
             marker_side_len=marker_side_len)
+
+        # Determines if the node will publish Marker or MarkerPose arrays.
+        self.__detect_only = False
+        if self.marker_estimator.K is None or self.marker_estimator.D is None:
+            self.__detect_only = True
         
         # Set verbosity.
         assert verbose == True or verbose == False
@@ -31,6 +37,31 @@ class ArucoPoseEstimatorNode:
         Callback function used to estimate the marker pose and predicted
         uncertainty.
         """
+        def build_marker_msg(detection):
+            msg = Marker()
+
+            msg.mid = detection["mid"].item()
+            msg.corners = detection["corners"].flatten().tolist()
+            return msg
+
+        def build_pose_msg(pose_estimate):
+            msg = Pose()
+
+            tx, ty, tz = pose_estimate['tvec'].flatten()
+            msg.position.x = tx
+            msg.position.y = ty
+            msg.position.z = tz
+
+            rotations = R.from_rotvec(
+                pose_estimate['rvec'].flatten())
+            qx, qy, qz, qw = rotations.as_quat()
+            msg.orientation.x = qx
+            msg.orientation.y = qy
+            msg.orientation.z = qz
+            msg.orientation.w = qw
+
+            return msg
+            
         # Convert the color image to a CV image, and then get the data.
         cv_image = self.cvbridge.imgmsg_to_cv2(image_msg,
             desired_encoding='bgr8')
@@ -39,42 +70,45 @@ class ArucoPoseEstimatorNode:
         detections = self.marker_estimator.detect(cv_image)
         pose_estimates = self.marker_estimator.estimate_pose(
             detections)
-        if pose_estimates is None or len(pose_estimates) == 0:
-            return
 
-        # Extract the poses, transform them from camera to global coords,
-        # and publish the messages.
+        # Check if any 
+        if self.__detect_only == False and (pose_estimates is None or len(pose_estimates) == 0):
+            return None
+
+        # Extract the detection/pose information and publish the messages.
         if self.__verbose:
             rospy.loginfo('Time @ ' + str(image_msg.header.stamp))
-        for i in range(len(pose_estimates)):
-            msg = PoseStamped()
-            msg.header.stamp = image_msg.header.stamp
-            msg.header.frame_id = image_msg.header.frame_id
 
-            tx, ty, tz = pose_estimates[i]['tvec'].flatten()
-            msg.pose.position.x = tx
-            msg.pose.position.y = ty
-            msg.pose.position.z = tz
+        msg_array = self.__MSG_ARRAY_TYPE()
+        msg_array.header = image_msg.header
+        for i in range(len(detections)):
+            # Gather the marker information.
+            marker_msg = build_marker_msg(detections[i])
 
-            rotations = R.from_rotvec(
-                pose_estimates[i]['rvec'].flatten())
-            qx, qy, qz, qw = rotations.as_quat()
-            msg.pose.orientation.x = qx
-            msg.pose.orientation.y = qy
-            msg.pose.orientation.z = qz
-            msg.pose.orientation.w = qw
+            # Gather the marker pose information if required.
+            if self.__detect_only == False:
+                pose_msg = build_pose_msg(pose_estimates[i])
+                msg = MarkerPose()
+                
+                msg.detection = marker_msg
+                msg.pose = pose_msg
+                msg_array.markers.append(msg)
 
-            self.__pose_pub.publish(msg)
+            else:
+                msg_array.detections.append(marker_msg)
 
-            if self.__verbose:
-                logstr = '\n- Marker #{}:'
-                logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
-                logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
-                roll, pitch, yaw = rotations.as_euler("ZYX")
-                rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
-                    tx, ty, tz, np.degrees(roll), np.degrees(pitch),
-                    np.degrees(yaw)))
+            # if self.__verbose:
+            #     logstr = '\n- Marker #{}:'
+            #     logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
+            #     logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
+            #     roll, pitch, yaw = rotations.as_euler("ZYX")
+            #     rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
+            #         tx, ty, tz, np.degrees(roll), np.degrees(pitch),
+            #         np.degrees(yaw)))
         #end for
+        self.__msg_pub.publish(msg_array)
+
+        return None
     #end def
 
     def setup_node(self, camera_image_sub_topic, pose_publisher_topic,
@@ -82,8 +116,14 @@ class ArucoPoseEstimatorNode:
         self.camera_image_sub = rospy.Subscriber(
             camera_image_sub_topic, Image, callback=self.rcvd_image_callback)
 
-        self.__pose_pub = rospy.Publisher(pose_publisher_topic,
-                PoseStamped, queue_size=queue_len)
+        if self.__detect_only == True:
+            self.__MSG_ARRAY_TYPE = MarkerArray
+
+        else:
+            self.__MSG_ARRAY_TYPE = MarkerPoseArray
+
+        self.__msg_pub = rospy.Publisher(pose_publisher_topic,
+                self.__MSG_ARRAY_TYPE, queue_size=queue_len)
     #end def
 #end class
 
@@ -103,7 +143,7 @@ if __name__ == '__main__':
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
     verbose = rospy.get_param("~verbose", True)
 
-    aruco_estimator_node = ArucoPoseEstimatorNode(paramfilepath=paramfilepath,
+    aruco_estimator_node = ArucoDetectorNode(paramfilepath=paramfilepath,
         family_name=family_name, marker_side_len=marker_side_len, verbose=verbose)
     
     aruco_estimator_node.setup_node(image_sub_topic, publisher_topic,
