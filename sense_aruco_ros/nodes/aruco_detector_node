@@ -14,7 +14,7 @@ from sensor_msgs.msg import Image
 
 class ArucoDetectorNode:
 
-    def __init__(self, paramfilepath, family_name, marker_side_len, verbose):
+    def __init__(self, paramfilepath, family_name, marker_side_len):
         self.cvbridge = CvBridge()
 
         # Set up the marker estimator.
@@ -26,10 +26,6 @@ class ArucoDetectorNode:
         self.__detect_only = False
         if self.marker_estimator.K is None or self.marker_estimator.D is None:
             self.__detect_only = True
-        
-        # Set verbosity.
-        assert verbose == True or verbose == False
-        self.__verbose = verbose
     #end def
 
     def rcvd_image_callback(self, image_msg):
@@ -71,14 +67,11 @@ class ArucoDetectorNode:
         pose_estimates = self.marker_estimator.estimate_pose(
             detections)
 
-        # Check if any 
+        # If we want to estimate the pose and no poses were computed, return None.
         if self.__detect_only == False and (pose_estimates is None or len(pose_estimates) == 0):
             return None
 
         # Extract the detection/pose information and publish the messages.
-        if self.__verbose:
-            rospy.loginfo('Time @ ' + str(image_msg.header.stamp))
-
         msg_array = self.__MSG_ARRAY_TYPE()
         msg_array.header = image_msg.header
         for i in range(len(detections)):
@@ -96,16 +89,7 @@ class ArucoDetectorNode:
 
             else:
                 msg_array.detections.append(marker_msg)
-
-            # if self.__verbose:
-            #     logstr = '\n- Marker #{}:'
-            #     logstr += '\n --- pos [xyz in m]:    ({:.2f}, {:.2f}, {:.2f}), '
-            #     logstr += '\n --- rot [rpy in degs]: ({:.1f}, {:.1f}, {:.1f})\n'
-            #     roll, pitch, yaw = rotations.as_euler("ZYX")
-            #     rospy.loginfo(logstr.format(pose_estimates[i]['mid'],
-            #         tx, ty, tz, np.degrees(roll), np.degrees(pitch),
-            #         np.degrees(yaw)))
-        #end for
+                
         self.__msg_pub.publish(msg_array)
 
         return None
@@ -123,7 +107,7 @@ class ArucoDetectorNode:
             self.__MSG_ARRAY_TYPE = MarkerPoseArray
 
         self.__msg_pub = rospy.Publisher(pose_publisher_topic,
-                self.__MSG_ARRAY_TYPE, queue_size=queue_len)
+            self.__MSG_ARRAY_TYPE, queue_size=queue_len)
     #end def
 #end class
 
@@ -132,22 +116,20 @@ if __name__ == '__main__':
     queue_len = 60
     rospy.init_node('aruco_pose_estimator', anonymous=True)
     
-    # Configure the node.
+    # Configure the node with parameters.
     rospack = rospkg.RosPack()
-    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path('fpv_cam_description'),
-        "calib/fpv_cam.yaml")
+    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path("sense_aruco_simulations"),
+        "params/fpv_params.yaml")
     paramfilepath = rospy.get_param("~parampath", PX4_FPV_CAM_PATH)
     family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
     marker_side_len = float(rospy.get_param("~marker_len", 0.18))
     image_sub_topic = rospy.get_param("~image_topic", '/fpv_cam/usb_cam/image_raw')
     publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
-    verbose = rospy.get_param("~verbose", True)
 
+    # Create the estimator node and run.
     aruco_estimator_node = ArucoDetectorNode(paramfilepath=paramfilepath,
-        family_name=family_name, marker_side_len=marker_side_len, verbose=verbose)
-    
-    aruco_estimator_node.setup_node(image_sub_topic, publisher_topic,
-        queue_len)
+        family_name=family_name, marker_side_len=marker_side_len)
+    aruco_estimator_node.setup_node(image_sub_topic, publisher_topic, queue_len)
     
     rospy.spin()
 #end if
