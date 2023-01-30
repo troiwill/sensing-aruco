@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sense_aruco_ros)
 
-find_package(catkin REQUIRED COMPONENTS
-    cv_bridge
+find_package(catkin REQUIRED
     message_generation
     geometry_msgs
     sensor_msgs
     std_msgs
-    rospy
 )
 
 add_message_files(
