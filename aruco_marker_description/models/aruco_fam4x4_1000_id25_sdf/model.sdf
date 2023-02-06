@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<sdf version="1.4">
+<sdf version="1.6">
   <model name="aruco_fam4x4_1000_id25_sdf">
     <pose>0 0 0 0 0 0</pose>
     <static>true</static>
