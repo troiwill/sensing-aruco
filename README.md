@@ -36,17 +36,35 @@ git clone https://github.com/troiwill/sensing-aruco
 2) Create links to the packages.
 ```
 cd ${HOME}/catkin_ws/src
-ln -s ${HOME}/repos/sensing-aruco/aruco_marker_description aruco_marker_description
-ln -s ${HOME}/repos/sensing-aruco/sense_aruco sense_aruco
+ln -s ${HOME}/repos/sensing-aruco sensing-aruco
 ```
 
 3) Make the scripts executable.
 ```
-chmod +x ${HOME}/repos/sensing-aruco/sense_aruco/scripts/*.py
+chmod +x ${HOME}/repos/sensing-aruco/sense_aruco_ros/nodes/aruco_detector_node
 ```
 
 4) Build the workspaces.
 ```
 cd ..
-catkin build
+catkin_make
+```
+
+5) Source the catkin workspace.
+```
+source devel/setup.bash
+```
+
+## Run Demo
+
+Run Gazebo, export the model paths, and run the demo launch file.
+```
+# In one terminal tab, run:
+roslaunch gazebo_ros empty_world.launch
+
+
+# In a second terminal tab, run:
+export GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH}:${HOME}/repos/sensing-aruco/aruco_marker_description/models:${HOME}/repos/sensing-aruco/sense_aruco_simulations/models"
+
+roslaunch sense_aruco_simulations spawn_demo_cam_marker.launch
 ```
