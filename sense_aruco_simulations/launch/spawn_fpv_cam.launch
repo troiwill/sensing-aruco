@@ -1,7 +1,7 @@
 <launch>
     <!-- Camera configs -->
     <arg name="camera_name" default="fpv_cam"/>
-    <arg name="camera_path" default="$(find sense_aruco_simulations)/sdf/fpv_cam/model.sdf"/>
+    <arg name="camera_path" default="$(find sense_aruco_simulations)/sdf/$(arg camera_name)/model.sdf"/>
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="z" default="0"/>
