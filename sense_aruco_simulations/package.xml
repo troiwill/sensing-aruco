@@ -17,4 +17,9 @@
   <exec_depend>sense_aruco_ros</exec_depend>
   <exec_depend>aruco_marker_description</exec_depend>
 
+  <export>
+    <gazebo_ros gazebo_media_path="${prefix}"/>
+    <gazebo_ros gazebo_model_path="${prefix}/sdf"/>
+  </export>
+
 </package>
