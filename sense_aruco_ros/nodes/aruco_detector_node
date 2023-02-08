@@ -4,9 +4,6 @@ from sense_aruco.detector import ArucoDetector
 from sense_aruco_ros.msg import Marker, MarkerArray, MarkerPose, MarkerPoseArray
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Pose
-import numpy as np
-import os
-import rospkg
 import rospy
 from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Image
@@ -114,17 +111,14 @@ class ArucoDetectorNode:
 
 if __name__ == '__main__':
     queue_len = 60
-    rospy.init_node('aruco_pose_estimator', anonymous=True)
+    rospy.init_node("aruco_pose_estimator", anonymous=True)
     
     # Configure the node with parameters.
-    rospack = rospkg.RosPack()
-    PX4_FPV_CAM_PATH = os.path.join(rospack.get_path("sense_aruco_simulations"),
-        "params/fpv_params.yaml")
-    paramfilepath = rospy.get_param("~parampath", PX4_FPV_CAM_PATH)
-    family_name = rospy.get_param("~familyname", "DICT_4X4_1000")
-    marker_side_len = float(rospy.get_param("~marker_len", 0.18))
-    image_sub_topic = rospy.get_param("~image_topic", '/fpv_cam/usb_cam/image_raw')
-    publisher_topic = rospy.get_param("~pose_topic", "aruco_marker")
+    paramfilepath = rospy.get_param("/camera_intrinsics_file")
+    family_name = rospy.get_param("/familyname")
+    marker_side_len = rospy.get_param("/marker_len")
+    image_sub_topic = rospy.get_param("/image_topic")
+    publisher_topic = rospy.get_param("/aruco_msg_topic", "/aruco_markers")
 
     # Create the estimator node and run.
     aruco_estimator_node = ArucoDetectorNode(paramfilepath=paramfilepath,
