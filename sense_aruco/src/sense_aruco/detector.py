@@ -6,7 +6,7 @@ import yaml
 
 class ArucoDetector:
 
-    def __init__(self, paramfilepath=None, family_name=None,
+    def __init__(self, paramfilepath=None, K=None, D=None, family_name=None,
         marker_side_len=None):
         self.__calib_mat = None
         self.__calib_dst = None
@@ -23,6 +23,9 @@ class ArucoDetector:
 
         if paramfilepath is not None:
             self.load_camera_params(paramfilepath)
+
+        if K is not None and D is not None:
+            self.set_camera_params(K, D)
 
         if family_name is not None:
             self.set_marker_search_family(family_name)
@@ -181,6 +184,17 @@ class ArucoDetector:
             yamlfile = yaml.safe_load(f)
             self.__calib_mat = np.array(yamlfile['K']['data']).reshape((3,3))
             self.__calib_dst = np.array(yamlfile['D']['data']).reshape((1,5))
+    #end def
+
+    def set_camera_params(self, K, D):
+        """
+        Sets the camera calibration parameters.
+        """
+        assert type(K) is np.ndarray and K.shape == (3,3)
+        assert type(D) is np.ndarray and (D.shape == (1,5) and D.shape == (5,))
+
+        self.__calib_mat = K.copy()
+        self.__calib_dst = D.reshape(1,5).copy()
     #end def
 
     def set_marker_side_len(self, marker_side_len):

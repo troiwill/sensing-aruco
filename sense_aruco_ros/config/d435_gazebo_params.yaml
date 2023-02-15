@@ -1,38 +1,37 @@
-camera_model_name: "d435"
+camera:
+    name: "d435"
 
-camera_hfov: 69.4
-camera_vfov: 42.5
+    camera_hfov: 69.4
+    camera_vfov: 42.5
+    
+    color_hfov: 69.4
+    color_vfov: 42.5
+    
+    depth_hfov: 86.0
+    depth_vfov: 57.0
+    
+    min_view_distance: 0.3
+    max_view_distance: 11
+    
+    image_width: 640
+    image_height: 480
+    
+    intrinsics:
+        K:
+            rows: 3
+            cols: 3
+            data: [462.116945, 0.0, 319.401820, 0.0, 462.104656, 239.463691, 0.0, 0.0,   1.0]
+        D:
+            rows: 1
+            cols: 5
+            data: [-2.806794784494738e-05, 8.782548346593517e-05, -4.061736793383828e-06, -5.355458020623803e-05, 0.0]
+    
+        rectification_matrix:
+            rows: 3
+            cols: 3
+            data: [1., 0., 0., 0., 1., 0., 0., 0., 1.]
 
-color_hfov: 69.4
-color_vfov: 42.5
-
-depth_hfov: 86.0
-depth_vfov: 57.0
-
-min_view_distance: 0.3
-max_view_distance: 11
-
-image_width: 640
-image_height: 480
-K:
-    rows: 3
-    cols: 3
-    data: [462.116945,   0.0     , 319.401820,
-             0.0     , 462.104656, 239.463691,
-             0.0     ,   0.0     ,   1.0     ]
-D:
-    rows: 1
-    cols: 5
-    data: [-2.806794784494738e-05, 8.782548346593517e-05, -4.061736793383828e-06, -5.355458020623803e-05, 0.0]
-rectification_matrix:
-    rows: 3
-    cols: 3
-    data: [1., 0., 0.,
-           0., 1., 0.,
-           0., 0., 1.]
-projection_matrix:
-  rows: 3
-  cols: 4
-  data: [461.409576,   0.0     , 318.860632, 0.0,
-           0.0     , 461.188995, 238.962426, 0.0,
-           0.0     ,   0.0     ,   1.0,      0.0]
+        projection_matrix:
+            rows: 3
+            cols: 4
+            data: [461.409576, 0.0, 318.860632, 0.0, 0.0, 461.188995, 238.962426, 0.0, 0.0, 0.0, 1.0, 0.0]
