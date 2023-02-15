@@ -1,3 +1,6 @@
 {
-    "python.analysis.extraPaths": ["${workspaceFolder}/sense_aruco/src/"]
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/sense_aruco/src/",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
 }
