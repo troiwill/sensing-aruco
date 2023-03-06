@@ -31,5 +31,5 @@ git clone https://github.com/troiwill/sensing-aruco
 ```
 cd sensing-aruco
 python3 -m build
-python3 -m pip install dist/*.whl
+python3 -m pip install dist/*.whl --user
 ```
