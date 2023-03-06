@@ -5,7 +5,7 @@ authors = [
   { name="Troi Williams", email="willkode@outlook.com" },
 ]
 description = "A Python API for sensing ArUco markers in simulated and physical environments using OpenCV."
-readme = "../README.md"
+readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
