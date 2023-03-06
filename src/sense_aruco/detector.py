@@ -156,8 +156,8 @@ class ArucoDetector:
         # Load the camera parameters from the saved file
         with open(paramfilepath, "r") as f:
             yamlfile = yaml.safe_load(f)
-            calib_mat = np.array(yamlfile["camera_matrix"]).reshape((3, 3))
-            calib_dst = np.array(yamlfile["distortion_coefficients"]).reshape((1, 5))
+            calib_mat = np.array(yamlfile["K"]["data"]).reshape((3, 3))
+            calib_dst = np.array(yamlfile["D"]["data"]).reshape((1, 5))
 
             self.set_camera_params(calib_mat=calib_mat, calib_dst=calib_dst)
 
