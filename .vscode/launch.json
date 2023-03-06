@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "module": "sense_aruco",
-            "env": {"PYTHONPATH": "${workspaceFolder}/sense_aruco/src/"},
+            "env": {"PYTHONPATH": "${workspaceFolder}/src/"},
             "justMyCode": true
         }
     ]

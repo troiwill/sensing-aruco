@@ -1,2 +1,0 @@
-sense_aruco_ros/Marker detection
-geometry_msgs/Pose pose
