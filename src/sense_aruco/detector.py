@@ -16,7 +16,7 @@ class ArucoDetector:
 
         self.__marker_side_len = None
 
-        self.set_camera_params(calib_mat=np.eye(3), calib_dist=np.zeros((5,)))
+        self.set_camera_params(calib_mat=np.eye(3), calib_dst=np.zeros((5,)))
         self.set_marker_search_family("DICT_ARUCO_ORIGINAL")
         self.set_marker_side_len(0.1)
 
@@ -161,15 +161,15 @@ class ArucoDetector:
 
             self.set_camera_params(calib_mat=calib_mat, calib_dst=calib_dst)
 
-    def set_camera_params(self, calib_mat: np.ndarray, calib_dist: np.ndarray) -> None:
+    def set_camera_params(self, calib_mat: np.ndarray, calib_dst: np.ndarray) -> None:
         """
         Sets the camera calibration parameters.
         """
         assert type(calib_mat) is np.ndarray and calib_mat.shape == (3, 3)
-        assert type(calib_dist) is np.ndarray and np.squeeze(calib_dist).shape == (5,)
+        assert type(calib_dst) is np.ndarray and np.squeeze(calib_dst).shape == (5,)
 
         self.__calib_mat = calib_mat.copy()
-        self.__calib_dst = calib_dist.reshape(1, 5).copy()
+        self.__calib_dst = calib_dst.reshape(1, 5).copy()
 
     def set_marker_side_len(self, marker_side_len: float) -> None:
         """
